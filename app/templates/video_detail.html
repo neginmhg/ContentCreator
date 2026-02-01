@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ (video.title or 'Video')[:50] }} – Content Generator{% endblock %}
+{% block content %}
+<h1>{{ video.title }}</h1>
+<p class="count">
+  <span class="badge badge-{{ video.status }}">{{ video.status }}</span>
+  {{ video.channel_name }} · {{ video.published_at.strftime('%Y-%m-%d %H:%M') if video.published_at else '—' }}
+</p>
+<p><a href="{{ video.url }}" target="_blank" rel="noopener" class="btn btn-secondary">Open on YouTube</a></p>
+
+{% if video.error_reason %}
+<div class="error-box">{{ video.error_reason }}</div>
+{% endif %}
+
+<div style="margin-top:1rem;">
+  {% if video.status == 'NEW' or video.status == 'MANUAL_REVIEW' %}
+  <form action="/video/{{ video.video_id }}/generate" method="post" style="display:inline;">
+    <button type="submit" class="btn btn-primary">{{ 'Retry Generate' if video.status == 'MANUAL_REVIEW' else 'Generate Post' }}</button>
+  </form>
+  {% endif %}
+  {% if video.status == 'READY' or video.status == 'MANUAL_REVIEW' %}
+  <form action="/video/{{ video.video_id }}/mark-posted" method="post" style="display:inline;">
+    <button type="submit" class="btn btn-secondary">Mark POSTED</button>
+  </form>
+  <form action="/video/{{ video.video_id }}/mark-skipped" method="post" style="display:inline;">
+    <button type="submit" class="btn btn-secondary">Mark SKIPPED</button>
+  </form>
+  {% endif %}
+</div>
+
+{% if video.status == 'PROCESSING' %}
+<p style="margin-top:1rem;">
+  {{ processing_step_labels.get(video.processing_step, 'Processing') }}…
+  <span class="count">Refresh the page to see updates.</span>
+</p>
+<meta http-equiv="refresh" content="5">
+{% endif %}
+
+<div class="section" style="margin-top:1.5rem;">
+  <h2>LinkedIn draft</h2>
+  {% if draft and draft.text %}
+  <textarea id="draft-text" class="read-only" rows="8" readonly>{{ draft.text }}</textarea>
+  <p><button type="button" class="btn btn-primary" onclick="copyDraft()">Copy Draft</button></p>
+  {% else %}
+  <p class="count">No draft yet. Run “Generate Post” to create one.</p>
+  {% endif %}
+</div>
+
+<div class="section">
+  <h2>Transcript</h2>
+  {% if transcript and transcript.text %}
+  <details class="collapsible">
+    <summary>Show transcript ({{ transcript.word_count or 0 }} words)</summary>
+    <textarea id="transcript-text" class="read-only" rows="12" readonly style="margin-top:0.5rem;">{{ transcript.text }}</textarea>
+    <p><button type="button" class="btn btn-secondary" onclick="copyTranscript()">Copy Transcript</button></p>
+  </details>
+  {% elif transcript and transcript.status == 'FAILED' %}
+  <p class="count">Transcript failed: {{ transcript.error or 'Unknown error' }}</p>
+  {% else %}
+  <p class="count">No transcript yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function copyDraft() {
+  var el = document.getElementById('draft-text');
+  if (el) { el.select(); document.execCommand('copy'); }
+}
+function copyTranscript() {
+  var el = document.getElementById('transcript-text');
+  if (el) { el.select(); document.execCommand('copy'); }
+}
+</script>
+{% endblock %}

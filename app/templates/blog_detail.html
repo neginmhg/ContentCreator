@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}{{ blog.title[:50] }}{% if blog.title|length > 50 %}…{% endif %} – Content Generator{% endblock %}
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+  <div>
+    <h1>{{ blog.title }}</h1>
+    <p class="count">From: <strong>{{ blog.source_name }}</strong> | Published: {{ blog.published_at.strftime('%Y-%m-%d') if blog.published_at else '—' }}</p>
+  </div>
+  <div>
+    <span class="badge badge-{{ blog.status }}">{{ blog.status }}</span>
+    {% if blog.processing_step %}
+    <br><span class="count">{{ blog_processing_step_labels.get(blog.processing_step, 'Processing') }}…</span>
+    {% endif %}
+  </div>
+</div>
+
+<div style="margin-bottom: 1.5rem;">
+  <a href="{{ blog.url }}" target="_blank" rel="noopener" class="btn btn-secondary">Read Original</a>
+  {% if blog.status == 'NEW' or blog.status == 'MANUAL_REVIEW' %}
+  <form action="/blog/{{ blog.blog_id }}/generate" method="post" style="display:inline;">
+    <button type="submit" class="btn btn-primary">{{ 'Retry Generate' if blog.status == 'MANUAL_REVIEW' else 'Generate Post' }}</button>
+  </form>
+  {% endif %}
+  {% if blog.status == 'READY' or blog.status == 'MANUAL_REVIEW' %}
+  <form action="/blog/{{ blog.blog_id }}/mark-posted" method="post" style="display:inline;">
+    <button type="submit" class="btn btn-secondary">Mark POSTED</button>
+  </form>
+  <form action="/blog/{{ blog.blog_id }}/mark-skipped" method="post" style="display:inline;">
+    <button type="submit" class="btn btn-secondary">Mark SKIPPED</button>
+  </form>
+  {% endif %}
+  <a href="/" class="btn btn-secondary">← Back to Dashboard</a>
+</div>
+
+{% if blog.error_reason %}
+<div class="error-box">
+  <strong>Error:</strong> {{ blog.error_reason }}
+</div>
+{% endif %}
+
+<div class="section">
+  <h2>Blog Content</h2>
+  <div style="background: var(--card); padding: 1rem; border-radius: 6px; border: 1px solid var(--border); max-height: 400px; overflow-y: auto;">
+    {{ blog.content[:2000] }}{% if blog.content|length > 2000 %}…{% endif %}
+  </div>
+</div>
+
+{% if draft %}
+<div class="section">
+  <h2>Generated LinkedIn Post</h2>
+  <textarea class="read-only" readonly>{{ draft.text }}</textarea>
+</div>
+{% elif blog.status == 'PROCESSING' %}
+<div class="section">
+  <h2>Generated LinkedIn Post</h2>
+  <p class="count">Generating post… This page will auto-refresh.</p>
+</div>
+{% else %}
+<div class="section">
+  <h2>Generated LinkedIn Post</h2>
+  <p class="count">No draft generated yet.</p>
+</div>
+{% endif %}
+
+{% if blog.status == 'PROCESSING' %}
+<script>
+  // Auto-refresh every 3 seconds when processing
+  setTimeout(() => {
+    fetch(`/blog/{{ blog.blog_id }}/refresh`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.status !== 'PROCESSING') {
+          location.reload();
+        } else {
+          // Update status if still processing
+          const statusBadge = document.querySelector('.badge');
+          if (statusBadge) {
+            statusBadge.className = `badge badge-${data.status}`;
+            statusBadge.textContent = data.status;
+          }
+          const processingStep = document.querySelector('.count');
+          if (processingStep && data.processing_step_label) {
+            processingStep.textContent = data.processing_step_label + '…';
+          }
+          if (data.error_reason) {
+            location.reload(); // Reload to show error
+          } else {
+            setTimeout(() => location.reload(), 3000); // Try again in 3s
+          }
+        }
+      })
+      .catch(() => setTimeout(() => location.reload(), 5000)); // Fallback: reload in 5s
+  }, 3000);
+</script>
+{% endif %}
+{% endblock %}

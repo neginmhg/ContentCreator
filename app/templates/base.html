@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Content Generator{% endblock %}</title>
+  <style>
+    :root { --bg: #0f0f12; --card: #1a1a1f; --border: #2a2a32; --text: #e4e4e7; --muted: #71717a; --accent: #a78bfa; --accent-hover: #c4b5fd; }
+    * { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 1rem 2rem; line-height: 1.5; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accent-hover); text-decoration: underline; }
+    h1 { font-size: 1.5rem; margin: 0 0 1rem 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 600; }
+    .badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; }
+    .badge-NEW { background: #3b82f6; color: #fff; }
+    .badge-PROCESSING { background: #eab308; color: #000; }
+    .badge-READY { background: #22c55e; color: #000; }
+    .badge-MANUAL_REVIEW { background: #f97316; color: #000; }
+    .badge-POSTED { background: #6b7280; color: #fff; }
+    .badge-SKIPPED { background: #4b5563; color: #fff; }
+    .btn { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 6px; border: none; cursor: pointer; font-size: 0.875rem; margin-right: 0.25rem; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); color: #000; }
+    .btn-secondary { background: var(--border); color: var(--text); }
+    .btn-secondary:hover { background: #3f3f46; }
+    form { display: inline; }
+    .section { margin-bottom: 2rem; }
+    .section h2 { font-size: 1.1rem; margin: 0 0 0.5rem 0; color: var(--muted); }
+    .count { color: var(--muted); font-size: 0.9rem; }
+    textarea.read-only { width: 100%; min-height: 120px; background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 0.75rem; border-radius: 6px; font-family: inherit; resize: vertical; }
+    .collapsible { margin-top: 0.5rem; }
+    .collapsible summary { cursor: pointer; color: var(--accent); }
+    .error-box { background: #7f1d1d; color: #fecaca; padding: 0.75rem; border-radius: 6px; margin: 0.5rem 0; }
+    .tabs { margin-bottom: 1.5rem; }
+    .tab-buttons { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+    .tab-button { padding: 0.75rem 1rem; background: none; border: none; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+    .tab-button:hover { color: var(--text); }
+    .tab-button.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .fetch-section { margin-bottom: 1.5rem; padding: 1rem; background: var(--card); border-radius: 6px; border: 1px solid var(--border); }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  {% block body %}
+  <nav style="margin-bottom: 1.5rem;">
+    <a href="/">Dashboard</a> | 
+    <a href="/sources/channels">Channel Sources</a> | 
+    <a href="/sources/blogs">Blog Sources</a>
+  </nav>
+  {% block content %}{% endblock %}
+  {% endblock %}
+  {% block scripts %}{% endblock %}
+</body>
+</html>

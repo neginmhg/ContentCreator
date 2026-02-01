@@ -1,0 +1,5 @@
+https://techcrunch.com/feed/
+https://feeds.macrumors.com/publication/macrumors/all
+https://www.theverge.com/rss/index.xml
+https://feeds.arstechnica.com/arstechnica/index
+https://feeds.wired.com/wired/index

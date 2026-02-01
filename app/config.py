@@ -11,10 +11,35 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CHANNELS_FILE = PROJECT_ROOT / "channels.txt"
 BLOGS_FILE = PROJECT_ROOT / "blogs.txt"
 STYLE_FILE = PROJECT_ROOT / "style.md"
-DATA_DIR = PROJECT_ROOT / "data"
-AUDIO_DIR = DATA_DIR / "audio"
-CHUNKS_DIR = DATA_DIR / "chunks"
-DB_PATH = DATA_DIR / "content.db"
+
+# Database Configuration
+DATABASE_URL = os.getenv("DATABASE_URL", "")
+if DATABASE_URL:
+    # Production database (PostgreSQL, etc.)
+    DB_URL = DATABASE_URL
+    IS_PRODUCTION = True
+else:
+    # Development database (SQLite)
+    IS_PRODUCTION = False
+    DB_PATH = PROJECT_ROOT / "data" / "content.db"
+    DB_URL = f"sqlite:///{DB_PATH}"
+
+# Only create local directories if not in production
+if not IS_PRODUCTION:
+    DATA_DIR = PROJECT_ROOT / "data"
+    AUDIO_DIR = DATA_DIR / "audio"
+    CHUNKS_DIR = DATA_DIR / "chunks"
+    DB_PATH = DATA_DIR / "content.db"
+    
+    # Ensure dirs exist
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    AUDIO_DIR.mkdir(parents=True, exist_ok=True)
+    CHUNKS_DIR.mkdir(parents=True, exist_ok=True)
+else:
+    # Production paths (for reference, though audio may need temp storage)
+    DATA_DIR = Path("/tmp/content_generator_data")
+    AUDIO_DIR = DATA_DIR / "audio"
+    CHUNKS_DIR = DATA_DIR / "chunks"
 
 # OpenAI
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
@@ -30,8 +55,3 @@ YT_DLP_JS_RUNTIMES = os.getenv("YT_DLP_JS_RUNTIMES", "node").strip() or None
 
 # ffmpeg: Path to ffmpeg binary or directory containing ffmpeg/ffprobe. Leave empty to auto-detect from PATH.
 FFMPEG_LOCATION = os.getenv("FFMPEG_LOCATION", "").strip() or None
-
-# Ensure dirs exist
-DATA_DIR.mkdir(parents=True, exist_ok=True)
-AUDIO_DIR.mkdir(parents=True, exist_ok=True)
-CHUNKS_DIR.mkdir(parents=True, exist_ok=True)

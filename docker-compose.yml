@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/content_generator
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_TRANSCRIBE_MODEL=gpt-4o-mini-transcribe
+      - OPENAI_DRAFT_MODEL=gpt-4o-mini
+      - DRAFT_MAX_CHARS=1200
+      - AUDIO_CHUNK_MINUTES=10
+      - TIMEZONE=America/Los_Angeles
+      - YT_DLP_JS_RUNTIMES=node
+    depends_on:
+      - db
+    volumes:
+      - ./channels.txt:/app/channels.txt
+      - ./blogs.txt:/app/blogs.txt
+      - ./style.md:/app/style.md
+      - temp_data:/tmp/content_generator_data
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=content_generator
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  temp_data:

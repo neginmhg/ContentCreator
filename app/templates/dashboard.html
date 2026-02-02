@@ -14,9 +14,10 @@
     <div class="fetch-section">
       <h3>Fetch Latest Videos</h3>
       <p>Fetch the latest videos from channels listed in channels.txt</p>
-      <form action="/fetch-videos" method="post" style="display:inline;">
-        <button type="submit" class="btn btn-primary">Fetch Videos</button>
-      </form>
+      <button type="button" class="btn btn-primary" onclick="fetchVideos()">Fetch Videos</button>
+      <div id="fetch-videos-status" style="margin-top: 10px; display: none;">
+        <span id="fetch-videos-message">Fetching videos...</span>
+      </div>
     </div>
     
     <p class="count">Videos grouped by status. Use "Generate Post" on NEW or MANUAL_REVIEW to run the pipeline.</p>
@@ -99,9 +100,10 @@
     <div class="fetch-section">
       <h3>Fetch Latest Tech Blogs</h3>
       <p>Fetch the latest blog posts from tech blogs listed in blogs.txt</p>
-      <form action="/fetch-blogs" method="post" style="display:inline;">
-        <button type="submit" class="btn btn-primary">Fetch Blogs</button>
-      </form>
+      <button type="button" class="btn btn-primary" onclick="fetchBlogs()">Fetch Blogs</button>
+      <div id="fetch-blogs-status" style="margin-top: 10px; display: none;">
+        <span id="fetch-blogs-message">Fetching blogs...</span>
+      </div>
     </div>
     
     <p class="count">Blog posts grouped by status. Use "Generate Post" on NEW or MANUAL_REVIEW to run the pipeline.</p>
@@ -292,6 +294,85 @@ function bulkDeleteBlogs() {
   .catch(error => {
     console.error('Error:', error);
     alert('Failed to delete blogs');
+  });
+}
+
+// Fetch operations
+function fetchVideos() {
+  const statusDiv = document.getElementById('fetch-videos-status');
+  const messageSpan = document.getElementById('fetch-videos-message');
+  const button = event.target;
+  
+  // Show loading state
+  statusDiv.style.display = 'block';
+  messageSpan.textContent = 'Fetching videos...';
+  button.disabled = true;
+  button.textContent = 'Fetching...';
+  
+  // Send fetch request
+  fetch('/fetch-videos', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      messageSpan.textContent = 'Videos fetched successfully! Refreshing...';
+      // Wait a moment for background processing, then refresh
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+    } else {
+      messageSpan.textContent = 'Failed to fetch videos';
+      button.disabled = false;
+      button.textContent = 'Fetch Videos';
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    messageSpan.textContent = 'Failed to fetch videos';
+    button.disabled = false;
+    button.textContent = 'Fetch Videos';
+  });
+}
+
+function fetchBlogs() {
+  const statusDiv = document.getElementById('fetch-blogs-status');
+  const messageSpan = document.getElementById('fetch-blogs-message');
+  const button = event.target;
+  
+  // Show loading state
+  statusDiv.style.display = 'block';
+  messageSpan.textContent = 'Fetching blogs...';
+  button.disabled = true;
+  button.textContent = 'Fetching...';
+  
+  // Send fetch request
+  fetch('/fetch-blogs', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      messageSpan.textContent = 'Blogs fetched successfully! Refreshing...';
+      // Wait a moment for background processing, then refresh
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+    } else {
+      messageSpan.textContent = 'Failed to fetch blogs';
+      button.disabled = false;
+      button.textContent = 'Fetch Blogs';
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    messageSpan.textContent = 'Failed to fetch blogs';
+    button.disabled = false;
+    button.textContent = 'Fetch Blogs';
   });
 }
 </script>

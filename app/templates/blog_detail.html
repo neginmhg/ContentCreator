@@ -48,7 +48,8 @@
 {% if draft %}
 <div class="section">
   <h2>Generated LinkedIn Post</h2>
-  <textarea class="read-only" readonly>{{ draft.text }}</textarea>
+  <textarea id="draft-text" class="read-only" readonly>{{ draft.text }}</textarea>
+  <p><button type="button" class="btn btn-primary" onclick="copyDraft()">Copy Draft</button></p>
 </div>
 {% elif blog.status == 'PROCESSING' %}
 <div class="section">
@@ -91,6 +92,26 @@
       })
       .catch(() => setTimeout(() => location.reload(), 5000)); // Fallback: reload in 5s
   }, 3000);
+</script>
+{% else %}
+<script>
+function copyDraft() {
+  var el = document.getElementById('draft-text');
+  if (el) { 
+    el.select();
+    document.execCommand('copy');
+    
+    // Show feedback
+    const button = event.target;
+    const originalText = button.textContent;
+    button.textContent = 'Copied!';
+    button.style.backgroundColor = 'var(--success)';
+    setTimeout(() => {
+      button.textContent = originalText;
+      button.style.backgroundColor = '';
+    }, 2000);
+  }
+}
 </script>
 {% endif %}
 {% endblock %}

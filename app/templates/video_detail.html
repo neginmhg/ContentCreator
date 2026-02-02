@@ -66,11 +66,37 @@
 <script>
 function copyDraft() {
   var el = document.getElementById('draft-text');
-  if (el) { el.select(); document.execCommand('copy'); }
+  if (el) { 
+    el.select();
+    document.execCommand('copy');
+    
+    // Show feedback
+    const button = event.target;
+    const originalText = button.textContent;
+    button.textContent = 'Copied!';
+    button.style.backgroundColor = 'var(--success)';
+    setTimeout(() => {
+      button.textContent = originalText;
+      button.style.backgroundColor = '';
+    }, 2000);
+  }
 }
 function copyTranscript() {
   var el = document.getElementById('transcript-text');
-  if (el) { el.select(); document.execCommand('copy'); }
+  if (el) { 
+    el.select();
+    document.execCommand('copy');
+    
+    // Show feedback
+    const button = event.target;
+    const originalText = button.textContent;
+    button.textContent = 'Copied!';
+    button.style.backgroundColor = 'var(--success)';
+    setTimeout(() => {
+      button.textContent = originalText;
+      button.style.backgroundColor = '';
+    }, 2000);
+  }
 }
 </script>
 {% endblock %}

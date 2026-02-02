@@ -1,5 +1,10 @@
-https://techcrunch.com/feed/
-https://feeds.macrumors.com/publication/macrumors/all
-https://www.theverge.com/rss/index.xml
-https://feeds.arstechnica.com/arstechnica/index
-https://feeds.wired.com/wired/index
+https://engineering.fb.com/feed
+https://engineering.atspotify.com/feed
+https://netflixtechblog.com/feed
+https://github.blog/engineering.atom
+https://dropbox.tech/feed
+https://instagram-engineering.com/feed
+https://www.theverge.com/rss/tech/index.xml
+http://rss.slashdot.org/Slashdot/slashdotMain
+https://news.ycombinator.com/rss
+

@@ -162,7 +162,7 @@ No explanations. No meta commentary.
 
 🧠 Final Instruction
 Write every post as if:
-"A Principal Engineer from Google or Meta might read this — and respect it.""""
+"A Principal Engineer from Google or Meta might read this — and respect it."""
 
     try:
         r = client.chat.completions.create(
